@@ -1,0 +1,24 @@
+GET http://localhost:3000/tests
+
+###
+GET http://localhost:3000/tests/66141b4174815d127f065756
+
+###
+POST http://localhost:3000/tests
+Content-Type: application/json
+
+{
+    "name": "Test 1",
+    "age": 20
+}
+
+###
+DELETE http://localhost:3000/tests/66141b6974815d127f065758
+
+###
+PATCH http://localhost:3000/tests/661424e4ec3ebebcb8b2374f
+Content-Type: application/json
+
+{
+    "name": "Test 2"
+}
