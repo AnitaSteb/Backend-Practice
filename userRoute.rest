@@ -1,0 +1,26 @@
+GET http://localhost:3000/users
+
+###
+GET http://localhost:3000/users/66141b4174815d127f065756
+
+###
+POST http://localhost:3000/users
+Content-Type: application/json
+
+{
+    "firstName": "user",
+    "lastName": "1",
+    "age": 20,
+    "height": 180
+}
+
+###
+DELETE http://localhost:3000/users/66141b6974815d127f065758
+
+###
+PATCH http://localhost:3000/users/661424e4ec3ebebcb8b2374f
+Content-Type: application/json
+
+{
+    "name": "user 2"
+}
