@@ -1,28 +1,41 @@
 const jwt = require('jsonwebtoken');
 const User = require('../models/user');
 
-const secretKey = 'your-secret-key'; // Replace with your own secret key
-
-function userAuthenticate(req, res, next) {
-    // Get the token from the request headers
-    const token = req.headers.authorization;
-
-    if (!token || !token.startsWith('Bearer ')) {
-        return res.status(401).json({ message: 'No token provided' });
-    }
-
+const userAuthenticate = async (req, res, next) => {
     try {
-        // Verify the token
-        const decoded = jwt.verify(token, secretKey);
-
-        // Attach the decoded user information to the request object
-        req.user = decoded;
-
-        // Call the next middleware
-        next();
+      // Extract the token from the 'Authorization' header
+      const token = req.header('Authorization');
+  
+      // Check if token is missing or doesn't start with 'Bearer '
+      if (!token || !token.startsWith('Bearer ')) {
+        return res.status(401).send('Authentication failed: Missing or invalid token');
+      }
+  
+      // Extract the token (remove 'Bearer ' prefix) and verify it using JWT_SECRET
+      const decoded = jwt.verify(token.replace('Bearer ', ''), process.env.JWT_SECRET);
+  
+      // Find the user (Test document) in the database using the decoded userId from the token
+      const user = await User.findById(decoded.userId);
+  
+      // If user (test) not found, authentication fails
+      if (!user) {
+        return res.status(401).send('Authentication failed: User not found');
+      }
+  
+      // Attach the user (test) object to the request for further processing
+      req.user = user;
+      next(); // Proceed to the next middleware or route handler
     } catch (error) {
-        return res.status(403).json({ message: 'Invalid token' });
+      // Handle specific JWT-related errors
+      if (error.name === 'JsonWebTokenError') {
+        return res.status(401).send('Authentication failed: Invalid token');
+      } else if (error.name === 'TokenExpiredError') {
+        return res.status(401).send('Authentication failed: Token expired');
+      } else {
+        // Log any other authentication errors to the console
+        console.error('Authentication error:', error);
+        return res.status(401).send('Authentication failed');
+      }
     }
-}
-
+  };
 module.exports = userAuthenticate;

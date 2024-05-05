@@ -1,17 +1,16 @@
-# GET http://localhost:3000/users
-# Authorization: Bearer 2c30e6c8d0d16b4e9b59801b0a931c75
-
 
 GET http://localhost:3000/users/661599e796015a91dbc0e96e
 ###
-POST http://localhost:3000/users
+POST http://localhost:3000/file
 Content-Type: application/json
 
 {
-    "firstname": "user3",
-    "lastname": "user3",
-    "age": 23,
-    "height": 180
+    "fileName": 'example.txt',
+      "size": 1024,
+      "pathToFile": "/path/to/example.txt",
+      "fileType": "text/plain",
+      "fileOwner": "john_doe",
+      "sha": "123abc",
 }
 
 ###

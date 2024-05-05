@@ -4,10 +4,10 @@ const User = require('../models/user');
 const userAuthenticate = require('../middleware/userAuthenticate');
 const { v4: uuidv4 } = require('uuid'); // Import uuidv4 function from uuid package
 
-// Route: GET all users (protected with authentication)
-router.get('/', userAuthenticate, (req, res) => {
-    res.send('This route is protected with JWT');
-});
+// // Route: GET all users (protected with authentication)
+// router.get('/', userAuthenticate, (req, res) => {
+//     res.send('This route is protected with JWT');
+// });
 
 // Route: GET one user by ID
 router.get('/:id', getUser, (req, res) => {
@@ -17,9 +17,12 @@ router.get('/:id', getUser, (req, res) => {
 
 // Route to create a new user
 router.post('/', async (req, res) => {
-    const { firstname, lastName, age, height } = req.body;
+        const { firstname, lastname, age, height } = req.body;
 
     try {
+        // Generate a random ID using uuidv4
+        const id = uuidv4();
+
         // Check if the user with the provided ID already exists
         const existingUser = await User.findOne({ id });
         if (existingUser) {
@@ -27,11 +30,10 @@ router.post('/', async (req, res) => {
         }
 
         // Create a new user instance
-        const id = uuidv4(); // Generate a random ID using uuidv4
         const newUser = new User({
             id,
             firstname,
-            lastName,
+            lastname,
             age,
             height
         });
@@ -49,12 +51,12 @@ router.post('/', async (req, res) => {
 router.patch('/:id', getUser, async (req, res) => {
     const { user } = res; // Retrieved user from the middleware
 
-    const { firstname, lastName, age, height } = req.body;
+    const { firstname, lastname, age, height } = req.body;
 
     try {
         // Update user properties based on the provided fields in the request body
         if (firstname) user.firstname = firstname;
-        if (lastName) user.lastName = lastName;
+        if (lastname) user.lastname = lastname;
         if (age) user.age = age;
         if (height) user.height = height;
 
@@ -72,7 +74,8 @@ router.delete('/:id', getUser, async (req, res) => {
     try {
         const { user } = res; // Retrieved user from the middleware
 
-        await user.remove(); // Delete the user document from the database
+        // Use User model to delete user by ID
+        await User.findByIdAndDelete(user._id);
 
         res.json({ message: 'Deleted user', deletedUser: user });
     } catch (error) {
